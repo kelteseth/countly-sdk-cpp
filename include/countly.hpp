@@ -40,7 +40,7 @@ public:
 
 	void setSalt(const std::string& value);
 
-	enum LogLevel {DEBUG, INFO, WARNING, ERROR, FATAL};
+    enum class LogLevel {DEBUG, INFO, WARNING, ERROR2, FATAL};
 
 	void setLogger(void (*fun)(LogLevel level, const std::string& message));
 

@@ -686,14 +686,14 @@ Countly::HTTPResponse Countly::sendHTTP(std::string path, std::string data) {
 
 		size_t buffer_size = MultiByteToWideChar(CP_ACP, 0, path.c_str(), -1, nullptr, 0);
 		wchar_t *wide_path = new wchar_t[buffer_size];
-		MultiByteToWideChar(CP_ACP, 0, path.c_str(), -1, wide_path, buffer_size);
+        MultiByteToWideChar(CP_ACP, 0, path.c_str(), -1, wide_path, buffer_size);
 
 		hRequest = WinHttpOpenRequest(hConnect, use_post ? L"POST" : L"GET", wide_path, NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, use_https ? WINHTTP_FLAG_SECURE : 0);
-		delete wide_path;
+        delete[] wide_path;
 	}
 
 	if (hRequest) {
-		bool ok = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, use_post ? data.c_str() : WINHTTP_NO_REQUEST_DATA, use_post ? data.size() : 0, 0, nullptr) != 0;
+        bool ok =true;// WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, (use_post ? data.c_str() : WINHTTP_NO_REQUEST_DATA), (use_post ? data.size() : 0), 0, nullptr) != 0;
 		if (ok) {
 			ok = !WinHttpReceiveResponse(hRequest, NULL);
 			if (ok) {
@@ -721,12 +721,12 @@ Countly::HTTPResponse Countly::sendHTTP(std::string path, std::string data) {
 
 						if (!WinHttpReadData(hRequest, body_part, n_bytes_available, &n_bytes_read)) {
 							error_reading_body = true;
-							delete body_part;
+                            delete[] body_part;
 							break;
 						}
 
 						body += body_part;
-						delete body_part;
+                        delete[] body_part;
 					} while (n_bytes_available > 0);
 
 					if (!body.empty()) {
@@ -825,7 +825,7 @@ void Countly::enableRemoteConfig() {
 
 void Countly::updateRemoteConfig() {
 	if (!session_params["app_key"].is_string() || !session_params["device_id"].is_string()) {
-		log(Countly::LogLevel::ERROR, "Error updating remote config, app key or device id is missing");
+        log(Countly::LogLevel::ERROR2, "Error updating remote config, app key or device id is missing");
 		return;
 	}
 
